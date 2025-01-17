@@ -28,6 +28,15 @@ def start(message):
     bot.send_message(message.chat.id, f"{welcome_word} {message.from_user.first_name}!\n\nВыберете действие:\n1. Подсчитывать количество проведенных пар по всем дисциплинам у группы\n2. Поиск студентов с средним баллом ниже чем 3", reply_markup=markup)
 
 
+@bot.callback_query_handler(func=lambda callback: True)
+def callback_message(callback):
+    chat_id = callback.message.chat.id
+
+    if callback.data == 'count_complited_classes':
+        bot.send_message(chat_id, "Пришлите мне файл \"Расписание группы\" типа XLSX")
+    elif callback.data == 'analyze_average_score':
+        bot.send_message(chat_id, "Пришлите мне файл \"Отчет по студентам\" типа XLSX")
+
 print("Bot Started!")
 bot.polling(non_stop=True)
 
