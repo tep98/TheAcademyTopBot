@@ -1,7 +1,12 @@
 import telebot
 from datetime import datetime
 from telebot import types
+import os
 
+#Создание временной директории для файлов
+TEMP_DIR = 'temp_files'
+if not os.path.exists(TEMP_DIR):
+    os.makedirs(TEMP_DIR)
 
 TOKEN = ""
 bot = telebot.TeleBot(TOKEN)
@@ -36,6 +41,32 @@ def callback_message(callback):
         bot.send_message(chat_id, "Пришлите мне файл \"Расписание группы\" типа XLSX")
     elif callback.data == 'analyze_average_score':
         bot.send_message(chat_id, "Пришлите мне файл \"Отчет по студентам\" типа XLSX")
+
+
+@bot.message_handler(content_types='document')
+def handle_file(message):
+    chat_id = message.chat.id
+
+    try:
+        #Получение информации о файле
+        file_id = message.document.file_id
+        file_info = bot.get_file(file_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+
+        #Сохранение файла во временную директорию
+        file_name = message.document.file_name
+        file_path = os.path.join(TEMP_DIR, file_name)
+        with open(file_path, 'wb') as new_file:
+            new_file.write(downloaded_file)
+
+        print('Файл принят!')
+
+    except Exception as E:
+        bot.reply_to(message, f'Произошла ошибка в работе бота, {E}')
+
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
 print("Bot Started!")
 bot.polling(non_stop=True)
