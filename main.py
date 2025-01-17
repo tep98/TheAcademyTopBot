@@ -68,6 +68,40 @@ def handle_file(message):
                 workbook = openpyxl.load_workbook(file_path)
                 sheet = workbook.active
 
+                rows_values = list(sheet.values)
+                print(rows_values)
+                subjects_list = []
+                subjects_count_list = []
+
+                # Логика для подсчета количества проведенных пар по всем дисциплинам
+                for row in rows_values[1:]:
+                    for value in row[3:]:
+                        if value is not None:
+                            value_str = str(value)
+
+                            if value_str.split(" ", 1)[0] == "Предмет:":
+                                value_str_splitline = value_str.splitlines()[0]
+
+                                if value_str_splitline not in subjects_list:
+                                    subjects_list.append(value_str_splitline)
+                                    subjects_count_list.append(1)
+
+                                else:
+                                    index = subjects_list.index(value_str_splitline) if value_str_splitline in subjects_list else None
+                                    if index is not None:
+                                        if subjects_count_list[index] is not None:
+                                            subjects_count_list[index] += 1
+
+                # Подсчет и вывод результатов
+                result = ""
+                for subject in range(len(subjects_list)):
+                    result += f"{subjects_list[subject].split(' ', 1)[1]} - занятий: {subjects_count_list[subject]}\n"
+
+                if result == "":
+                    bot.reply_to(message, "Файл не содержит требуемой информации, убедитесь в том, что выбрали нужный документ")
+                    return
+
+                bot.send_message(chat_id, f"Группа: {sheet['A2'].value}\n\n{result}")
 
             except Exception as E:
                 bot.reply_to(message, f'Ошибка при попытке открытия файла, {E}')
