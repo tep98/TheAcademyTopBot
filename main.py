@@ -124,7 +124,63 @@ def handle_file(message):
 
                 #Действие 2 (Задание 5)
                 elif state == 'analyze_average_score':
-                    print("Анализ средних оценок ниже чем 3")
+
+                    if not ("fio" in [cell.value.lower() for cell in sheet[1]]):
+                        bot.reply_to(message, "Файл не содержит необходимых столбцов. Проверьте формат.")
+                        return
+
+                    first_row = tuple(sheet.rows)[0]
+
+                    for cell in first_row:
+                        print(cell.value)
+                        match cell.value.lower():
+                            case "fio":
+                                FIO_cell = sheet[cell.column_letter]
+                                continue
+                            case "группа":
+                                group_cell = sheet[cell.column_letter]
+                                continue
+                            case "homework":
+                                HW_cell = sheet[cell.column_letter]
+                                continue
+                            case "classroom":
+                                CW_cell = sheet[cell.column_letter]
+                                continue
+                        print("Значение не найдено")
+
+                    bad_students_info = []
+                    BORDER_MARK = 3
+
+                    for cell in range(1, len(HW_cell)):
+                        try:
+                            avg_mark = (int(HW_cell[cell].value or 0) + int(CW_cell[cell].value or 0)) / 2
+                        except ValueError:
+                            bot.send_message(chat_id, f"Ошибка в данных ученика в строке {cell + 1}. Проверьте файл.")
+                            continue
+
+                        print(avg_mark)
+
+                        if avg_mark < BORDER_MARK:
+                            bad_student_info = FIO_cell[cell].value + " " + group_cell[cell].value + " - avg: " + str(avg_mark)
+                            print(bad_student_info)
+                            print("BAD")
+                            bad_students_info.append(bad_student_info)
+                        else:
+                            print("GOOD")
+
+
+                    result = ""
+                    print(bad_students_info)
+                    print("составление результата...")
+
+                    for bad_student_info in bad_students_info:
+                        result += bad_student_info + "\n"
+
+                    print("Отправка результата...")
+
+                    bot.send_message(message.chat.id, f"Студенты с баллом ниже чем {BORDER_MARK}:\n\n{result}")
+                    print(bad_students_info)
+
 
             except Exception as E:
                 bot.reply_to(message, f'Ошибка при попытке открытия файла, {E}')
