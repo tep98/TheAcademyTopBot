@@ -1,6 +1,7 @@
 import telebot
 from datetime import datetime
 from telebot import types
+import openpyxl
 import os
 
 #Создание временной директории для файлов
@@ -58,6 +59,20 @@ def handle_file(message):
         file_path = os.path.join(TEMP_DIR, file_name)
         with open(file_path, 'wb') as new_file:
             new_file.write(downloaded_file)
+
+        if file_name.endswith('.xlsx'):
+            try:
+                bot.reply_to(message, f'Файл успешно загружен, пожалуйста подождите...')
+
+                #Открытие файла
+                workbook = openpyxl.load_workbook(file_path)
+                sheet = workbook.active
+
+
+            except Exception as E:
+                bot.reply_to(message, f'Ошибка при попытке открытия файла, {E}')
+        else:
+            bot.reply_to(message, 'Пожалуйста отправьте файл в формате "XLSX"')
 
         print('Файл принят!')
 
