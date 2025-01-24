@@ -71,7 +71,7 @@ def handle_file(message):
 
                 #Действие 1 (Задание 7)
                 if state == 'count_complited_classes':
-                    bot.send_message(chat_id, count_complited_classes(message, sheet))
+                    bot.send_message(chat_id, count_complited_classes(message, sheet), parse_mode = "HTML")
 
                 #Действие 2 (Задание 5)
                 elif state == 'analyze_average_score':
@@ -134,9 +134,9 @@ def count_complited_classes(message, sheet):
                                 subjects_count_list[index] += 1
 
     # Подсчет и вывод результатов
-    result = ""
+    result = "<b>Группа " + str(sheet.cell(2,1).value) + ":</b>\n\n"
     for subject in range(len(subjects_list)):
-        result += f"{subjects_list[subject].split(' ', 1)[1]} - занятий: {subjects_count_list[subject]}\n"
+        result += f"{subjects_list[subject].split(' ', 1)[1]} - занятий: <b>{subjects_count_list[subject]}</b>\n"
 
     if result == "":
         bot.reply_to(message, "Файл не содержит требуемой информации, убедитесь в том, что выбрали нужный документ")
