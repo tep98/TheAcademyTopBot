@@ -134,11 +134,12 @@ def count_complited_classes(message, sheet):
                                 subjects_count_list[index] += 1
 
     # Подсчет и вывод результатов
-    result = "<b>Группа " + str(sheet.cell(2,1).value) + ":</b>\n\n"
+    group_str = "<b>Группа " + str(sheet.cell(2,1).value) + ":</b>\n\n"
+    result = group_str
     for subject in range(len(subjects_list)):
         result += f"{subjects_list[subject].split(' ', 1)[1]} - занятий: <b>{subjects_count_list[subject]}</b>\n"
 
-    if result == "":
+    if result == group_str:
         bot.reply_to(message, "Файл не содержит требуемой информации, убедитесь в том, что выбрали нужный документ")
         return
 
