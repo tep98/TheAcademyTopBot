@@ -13,7 +13,7 @@ TEMP_DIR = 'temp_files'
 if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR)
 
-TOKEN = ""
+TOKEN = "YOURTOKEN"
 bot = telebot.TeleBot(TOKEN, state_storage=storage)
 
 
