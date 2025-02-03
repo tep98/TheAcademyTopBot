@@ -134,11 +134,12 @@ def count_complited_classes(message, sheet):
                                 subjects_count_list[index] += 1
 
     # Подсчет и вывод результатов
-    result = "<b>Группа " + str(sheet.cell(2,1).value) + ":</b>\n\n"
+    group_str = "<b>Группа " + str(sheet.cell(2,1).value) + ":</b>\n\n"
+    result = group_str
     for subject in range(len(subjects_list)):
         result += f"{subjects_list[subject].split(' ', 1)[1]} - занятий: <b>{subjects_count_list[subject]}</b>\n"
 
-    if result == "":
+    if result == group_str:
         bot.reply_to(message, "Файл не содержит требуемой информации, убедитесь в том, что выбрали нужный документ")
         return
 
@@ -168,7 +169,6 @@ def analyze_average_score(message, chat_id, sheet):
             case "classroom":
                 CW_cell = sheet[cell.column_letter]
                 continue
-        print("Значение не найдено")
 
     bad_students_info = []
     BORDER_MARK = 3
@@ -180,25 +180,20 @@ def analyze_average_score(message, chat_id, sheet):
             bot.send_message(chat_id, f"Ошибка в данных ученика в строке {cell + 1}. Проверьте файл.")
             continue
 
-        print(avg_mark)
-
         if avg_mark < BORDER_MARK:
             bad_student_info = FIO_cell[cell].value + " " + group_cell[cell].value + " - avg: " + str(avg_mark)
-            print(bad_student_info)
-            print("BAD")
             bad_students_info.append(bad_student_info)
-        else:
-            print("GOOD")
 
     result = ""
-    print(bad_students_info)
+    
     print("составление результата...")
+    print(bad_students_info)
 
     for bad_student_info in bad_students_info:
         result += bad_student_info + "\n"
 
     print("Отправка результата...")
-    print(bad_students_info)
+    print(result)
 
     return result
 
